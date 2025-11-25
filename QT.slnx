@@ -1,4 +1,8 @@
 <Solution>
+  <Folder Name="/doc/">
+    <File Path="use_case.md" />
+  </Folder>
+  <Project Path="../QT.Control/QT.Control.csproj" Id="0c53b218-d50d-4d76-a963-6a0b0e9578d0" />
   <Project Path="../QT.Data/QT.Data.csproj" />
   <Project Path="QT.csproj" />
 </Solution>
