@@ -10,7 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-
+using QT.Control.Chart;
 namespace QT
 {
     /// <summary>
@@ -25,7 +25,7 @@ namespace QT
 
       private void btnTest_Click(object sender, RoutedEventArgs e)
       {
-         Control.Dashboard board = new Control.Dashboard()
+         Control.Dashboard board = new ()
          {
 
             //測試用的
@@ -33,18 +33,10 @@ namespace QT
             {
                Symbol = "3661",
                Interval = BarInterval.Day,
-               ZoomLevel = 1.0,
                VisibleStart = new DateTime(2025, 1, 1),
             }
 
          };
-
-         //Window win = new();
-         //win.Content = board;
-         //board.InitializeDashboard();
-         
-         //win.ShowDialog();
-         //return;
 
 
          this.Content = board;
