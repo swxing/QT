@@ -67,7 +67,7 @@ namespace QT.UI
 
 
 
-         RowDefinition row1 = new RowDefinition();
+         RowDefinition row1 = new();
          row1.Height = new GridLength(2, GridUnitType.Star);
          this.grid.RowDefinitions.Add(row1);
 
