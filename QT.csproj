@@ -13,8 +13,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\QT.Control\QT.Control.csproj" />
+    <ProjectReference Include="..\QT.Control\QT.UI.csproj" />
     <ProjectReference Include="..\QT.Data\QT.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ViewModels\" />
+    <Folder Include="Views\" />
   </ItemGroup>
 
 </Project>

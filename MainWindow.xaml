@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QT"
-        xmlns:Control="clr-namespace:QT.Control;assembly=QT.Control" x:Class="QT.MainWindow"
+        xmlns:Control="clr-namespace:QT.UI;assembly=QT.UI" x:Class="QT.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
     <Grid>

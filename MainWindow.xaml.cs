@@ -1,16 +1,9 @@
-﻿using QT.Control;
+﻿
 using QT.Data;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using QT.Control.Chart;
+using QT.UI;
+using QT.UI.Charts;
 namespace QT
 {
     /// <summary>
@@ -25,7 +18,7 @@ namespace QT
 
       private void btnTest_Click(object sender, RoutedEventArgs e)
       {
-         Control.Dashboard board = new ()
+         Dashboard board = new ()
          {
 
             //測試用的
@@ -38,15 +31,10 @@ namespace QT
 
          };
 
-
          this.Content = board;
          board.InitializeDashboard();
 
-
       }//fn
-
-
-
 
 
     }//cls
