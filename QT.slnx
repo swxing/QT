@@ -2,8 +2,7 @@
   <Folder Name="/doc/">
     <File Path="use_case.md" />
   </Folder>
-  <Project Path="../QT.Control/QT.UI.csproj" />
-  <Project Path="../QT.Core/QT.Core.csproj" Id="65ac5b71-d36e-493e-90fd-ea3fafe80a80" />
+  <Project Path="../QT.Core/QT.Core.csproj" Id="39e5ff2b-bcb3-426d-a4da-62ba948531d5" />
   <Project Path="../QT.Data/QT.Data.csproj" />
   <Project Path="QT.csproj" />
 </Solution>

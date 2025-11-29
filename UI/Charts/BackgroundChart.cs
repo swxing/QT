@@ -22,12 +22,17 @@ namespace QT.UI.Charts
 
       /// <summary>for selection date and plot... </summary>
       List<SelectionPlot> _selectionPlots = new List<SelectionPlot>();
-      DashboardState _state;
+      ChartViewState _state;
 
-      public DashboardState State
+      public ChartViewState State
       {
-         get { return this._state; }
-         set { this._state = value; }
+         get=> this._state;
+         set
+         { 
+            _state= value;
+            _state.RefreshChartsUiRequested += () => this.InvalidateVisual();
+            
+         }
       }
 
       /// <summary>在加入 plot之後，並不會進行繪制。而是需要呼叫InvalidVisual才行。
@@ -36,7 +41,6 @@ namespace QT.UI.Charts
       /// <param name="plot"></param>
       public void AddSelectionPlots(List<SelectionPlot> plots)
       {
-         //         this._selectionPlots.Add(plot);
          this._selectionPlots.AddRange(plots);
       }
 
@@ -61,19 +65,18 @@ namespace QT.UI.Charts
       }
 
 
-      protected override void OnRender(DrawingContext drawingContext)
+      protected override void OnRender(DrawingContext dc)
       {
-         base.OnRender(drawingContext);
+         base.OnRender(dc);
 
          //@ draw control background
          Rect rect = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
-         drawingContext.DrawRectangle(Brushes.Transparent, null, rect);
-         if (this._state == DashboardState.Empty)
+         dc.DrawRectangle(Brushes.Black, null, rect);
+         if (this._state == ChartViewState.Empty)
             return;
 
-         //@ calc related paramters ~ 
-         //var ts = TradingSet.GetTradingSet(this._state.Stock.Token);
-         var ts = QT.Data.Repository.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
+         
+         var ts = QT.Data.Repos.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
          var index = ts.IndexOfByDate(this._state.VisibleStart, Data.FindDirection.Forward);
          if (index == -1)
             return;
@@ -103,9 +106,9 @@ namespace QT.UI.Charts
 
             Rect rectM = new Rect(p1, p2);
             if (month % 2 != 0)
-               drawingContext.DrawRectangle(Res.Month1BKBrush, null, rectM);
+               dc.DrawRectangle(Res.Month1BKBrush, null, rectM);
             else
-               drawingContext.DrawRectangle(Res.Month2BKBrush, null, rectM);
+               dc.DrawRectangle(Res.Month2BKBrush, null, rectM);
             x0 = x1;
          }
          #endregion
@@ -117,7 +120,7 @@ namespace QT.UI.Charts
          && temp.Date <= items[items.Count-1].TimeStamp);
 
 
-         drawingContext.PushOpacity(0.3);
+         dc.PushOpacity(0.3);
          foreach (var selection in selections)
          {
             index = ts.IndexOfByDate(selection.Date,Data.FindDirection.Forward) - ts.IndexOfByDate(this._state.VisibleStart, Data.FindDirection.Forward);
@@ -125,10 +128,10 @@ namespace QT.UI.Charts
             x += this._state.OffsetX;
 
             Rect selRect = new Rect(x, 0, this._state.BarWidth, rect.Height);
-            drawingContext.DrawRectangle(selection.Brush, null, selRect);
+            dc.DrawRectangle(selection.Brush, null, selRect);
          }
 
-         drawingContext.Pop();
+         dc.Pop();
 
       }
    }

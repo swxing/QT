@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 
-namespace QT.UI.Charts
+namespace QT.UI
 {
    internal class Tools
    {
@@ -20,7 +20,7 @@ namespace QT.UI.Charts
 
 
       /// <summary>建立白色的文字格式</summary>
-      public static System.Windows.Media.FormattedText GetFormattedText(string msg, Brush brush, int fontSize)
+      public static System.Windows.Media.FormattedText GetFormattedText(string msg, Brush brush, double fontSize)
       {
          CultureInfo culture = CultureInfo.CurrentCulture;
          var typeFace = new Typeface("Verdana");

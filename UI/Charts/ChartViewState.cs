@@ -5,11 +5,11 @@ using QT.Data;
 namespace QT.UI.Charts
 {
 
-   public class DashboardState
+   public class ChartViewState
    {
 
       /// <summary>空的State，方便判斷用的。</summary>
-      public static DashboardState Empty = new();
+      public static ChartViewState Empty = new();
 
       public bool IsFixedDateLine { get; set; }
 
@@ -32,8 +32,7 @@ namespace QT.UI.Charts
       // 可視區間（這兩個決定要給圖表的資料範圍）
       /// <summary>可視區間開始</summary>
       public DateTime VisibleStart { get; set; }
-      //public DateTime VisibleEnd { get; init; }
-
+      
 
       DateTime? _selectedDate;
       public DateTime? SelectedDate
@@ -47,8 +46,6 @@ namespace QT.UI.Charts
          }
       }
 
-      // 縮放與平移輔助（可選）
-      //public double ZoomLevel { get; init; } = 1.0;      // >1 表示放大
       public double OffsetX { get; set; } = 0.0;      // 像素偏移或比例偏移
 
       bool _isDrag = false;
@@ -61,7 +58,7 @@ namespace QT.UI.Charts
          }
       }
 
-      public double BarWidth { get; set; } = 20.0; // 每根K棒的寬度（像素）
+      public double BarWidth { get; set; } = 20.0; // 每根K棒的寬度（像素），Dashboard會透過User的縮放來控制這個值
 
 
       /// <summary>選取的日期改變了。有這個事件，則Diagram可以可以針對這個事件進行單獨的Update,而不用做全部的繪制。</summary>

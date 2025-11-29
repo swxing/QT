@@ -14,19 +14,22 @@ namespace QT.UI.Charts
    public class DashboardLid: System.Windows.FrameworkElement
    {
       //null!是null抑制運算子，表示我保證這個值不會是null。
-      DashboardState _state = null!;     //我保證這個值會在後續被設定好。這樣才不會有8618的警告。
+      ChartViewState _state = null!;     //我保證這個值會在後續被設定好。這樣才不會有8618的警告。
 
 
       public DashboardLid()
       {
-         
-         
+         IsHitTestVisible = false;      //這個控制項不會攔截滑鼠事件。
+                                        //WPF的路由事件系統會先從最上層的元素開始往下找(到isHitTestVisible=true)，找到第一個能處理事件的元素來處理事件。
+                                        //但在 Grid 中，事件不是「在所有子控件內一個一個輪流傳」，
+                                        //而是「滑鼠底下那個最上層控件先被 hit，事件只在它和它的父層之間路由」。
+
 
       }
 
 
       /// <summary></summary>
-      public required DashboardState State
+      public required ChartViewState State
       {     //required表示這個屬性在物件初始化時一定要被設定好。。
          //required,可以用init與set來設定值, 但都要在建構器中使用。但set是可再次設定的。
          get { return this._state; }
@@ -37,7 +40,6 @@ namespace QT.UI.Charts
             this._state = value;
             this._state.SelectedDateChanged += State_SelectionDateChanged;
             this._state.DragStarted += State_DragStarted;
-
          }
       }
 
@@ -60,15 +62,14 @@ namespace QT.UI.Charts
 
          //System.Diagnostics.Debug.WriteLine("進入");
 
-         if (this._state == DashboardState.Empty)
+         if (this._state == ChartViewState.Empty)
             return;
 
          base.OnRender(dc);
-         if (this._state == null || string.IsNullOrEmpty(this._state.Symbol) == null)
+         if (this._state == null || string.IsNullOrEmpty(this._state.Symbol) )
             return;
 
-         if (this._state.SelectedDate == DateTime.MinValue)
-            return;
+
 
          if (this._state.IsDrag)
             return;                  //拖曳中，不繪制十字線
@@ -100,7 +101,7 @@ namespace QT.UI.Charts
          if (this._state.SelectedDate != null)
          {
             //var his = TradingSet.GetTradingSet(this._state.Stock.Token);
-            var his = QT.Data.Repository.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
+            var his = QT.Data.Repos.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
             var index = his.IndexOfByDate(this._state.VisibleStart, Data.FindDirection.Forward);                     //圖上的第一個日期
             var index2 = his.IndexOfByDate(this._state.SelectedDate.Value, Data.FindDirection.Forward);           //滑鼠選取的日期
             double x0 = this._state.OffsetX + this._state.BarWidth * (index2 - index);

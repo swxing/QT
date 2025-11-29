@@ -17,9 +17,9 @@ namespace QT.UI.Charts
 
       }
 
-      DashboardState _state = null!;
+      ChartViewState _state = null!;
 
-      public  DashboardState State
+      public  ChartViewState State
       {
          get => this._state;
          set
@@ -44,12 +44,12 @@ namespace QT.UI.Charts
          //State，有StartDate。跟selectDate
 
          //@ 繪制日期
-         if(this._state==DashboardState.Empty)
+         if(this._state==ChartViewState.Empty)
             return;
 
          
 
-         var his = QT.Data.Repository.DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+         var his = QT.Data.Repos.DataService.GetBarSet(this.State.Symbol, this.State.Interval);
          int count = (int)(this.ActualWidth / this.State.BarWidth);       //how many bar can inside of the control
          var index = his.IndexOfByDate(this.State.VisibleStart, Data.FindDirection.Forward);
 

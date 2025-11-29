@@ -1,5 +1,5 @@
 ﻿using QT.Data;
-using QT.Data.Repository;
+using QT.Data.Repos;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -49,9 +49,9 @@ namespace QT.UI.Charts
 
 
 
-      DashboardState _state = null!;
+      ChartViewState _state = null!;
 
-      public DashboardState State
+      public ChartViewState State
       {
          get => _state;
 

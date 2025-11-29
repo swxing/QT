@@ -1,135 +1,47 @@
-﻿using QT.UI.Charts;
-using QT.Data;
+﻿using QT.Data;
 using QT.Data.Repos;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Runtime.InteropServices;
+using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using d= System.Diagnostics.Debug;
-namespace QT.UI
+
+namespace QT.UI.Charts
 {
-   /// <summary>
-   /// Dashboard.xaml 的互動邏輯
+
+
+   /// <summary>一個位於最頂端的透明層，用來處理滑鼠的訊息，含move, drag等，並再將結果設定到State屬性中。
+   ///   
    /// </summary>
-   public partial class Dashboard : UserControl
-   {
-      /*
-      >放單一商品的圖： 含K線圖、成交量、技術指標等。
-      >用state同步： 會有一個DashboardState來管理整個Dashboard的狀態。其他的chart會共用這個State。來達到同步的效果。
-      > DashboardLid： 會放在最上層，來顯示裝飾的部份，例如十字線。
-      > 滑鼠點擊： Dashboard處理件，再包裝到狀態(DashboardState)，charts根據State來更新. 
-      > 事件汽泡： 由上往下，再由下往上傳遞事件。如果Dashboard要吃掉事件時，就要在Pre...處理，然後e.handled=true。
-      > 滑鼠滾輪： Dashboard處理滑鼠滾輪事件=> 變更State狀態 => 引發事件=> 其他chart更新顯示。
-      > 日期選取：Dashboard的PreMouseMove事件=> 計算日期=> 設定State.SelectedDate=> 引發事件=> 其他chart更新顯示。
-  
-       
-       */
+    public class ChartInteractionLayer:System.Windows.Controls.Control
+    {
+
+      public required ChartViewState State { get; set; } = ChartViewState.Empty;
 
 
-
-      //BarSet _barSet = null!;   // 會在建構子或 Loaded 時注入
-      public required ChartViewState State { get; set; }=ChartViewState.Empty;
-
-
-      public Dashboard()
+      public ChartInteractionLayer()
       {
-         InitializeComponent();
-
-         //如果在設計模式下，就不進行後續處理。
-         if (DesignerProperties.GetIsInDesignMode(this))
-            return;
-
          this.MouseWheel += Dashboard_MouseWheel;
          this.MouseDown += Dashboard_MouseDown;
          this.MouseUp += Dashboard_MouseUp;
          this.MouseMove += Dashboard_MouseMove;
-
       }
 
 
-
-      /// <summary>設定完成Dashboard的State之後</summary>
-      /// <exception cref="InvalidOperationException"></exception>
-      public void InitializeDashboard()
+      /// <summary>當bar拉到最後時，呈現的Bar至少要劃面一半時的第一根。</summary>
+      /// <returns></returns>
+      public Bar GetStartBarWhenScrollEnd()
       {
-         if (this.State == null)
-            throw new InvalidOperationException("DashboardState 尚未設定。");
-
-
-
-
-
-         RowDefinition row1 = new();
-         row1.Height = new GridLength(2, GridUnitType.Star);
-         this.grid.RowDefinitions.Add(row1);
-
-         var row2 = new RowDefinition();
-         row2.Height = new GridLength(1, GridUnitType.Star);
-         this.grid.RowDefinitions.Add(row2);
-
-         var row3 = new RowDefinition();
-         row3.Height = new GridLength(22, GridUnitType.Pixel);
-         this.grid.RowDefinitions.Add(row3);
-
-
-
-         this.grid.ShowGridLines = true;
-
-         //加入底
-         var bkChart = new BackgroundChart() { State = this.State };
-         this.grid.Children.Add(bkChart); 
-         Grid.SetRow(bkChart,0);
-         Grid.SetRowSpan(bkChart, 3);
          
-         //加入KLineChart
-         var klineChart = new KLineChart() { State=this.State};
-         this.grid.Children.Add(klineChart);
-
-         //加入KLineInfoBarChart
-         var infoBarChart = new KLineInfoBarChart() { State=this.State};
-         this.grid.Children.Add(infoBarChart);
-
-         //加入Volume
-         var volumeChart = new VolumnChart() { State = this.State };
-         this.grid.Children.Add(volumeChart);   
-         Grid.SetRow(volumeChart, 1);
-
-         //加入日期軸
-         var dateChart = new DateTimeChart() { State=this.State, Height=22};
-         
-         this.grid.Children.Add(dateChart);
-         Grid.SetRow(dateChart, 2);
-
-
-
-
-         //加上Dashboard Lid
-         var dashboardLid = new DashboardLid() { State=this.State };
-         dashboardLid.State = this.State;
-         this.grid.Children.Add(dashboardLid);
-         Grid.SetRowSpan(dashboardLid, 2);      //跨兩列
-
-
-
-
-
-
-
-      }
-
-
-
-
-
-      public DateTime GetStartBarWhenScrollEnd()
-      {
-         //畫面上呈現的Bar不可少於劃面的一半
          var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
          double realBarWidth = this.barWidth * this.ScaleRate;
          int count = (int)(this.ActualWidth / realBarWidth / 2);          //可容納的bar數量
          var startBar = bars.Bars[bars.Bars.Count - count - 1];            //取得畫面為一半時的起始Bar
-         return startBar.TimeStamp;
+         return startBar;
       }
 
 
@@ -137,11 +49,12 @@ namespace QT.UI
 
       public void GoTo(DateTime date, FlowDirection direction)
       {
-         var maxDate = GetStartBarWhenScrollEnd();          //此為最大的StartDate。(因為bar的最後一根不可少於畫面的一半)
-         if (date > maxDate)
-            date = maxDate;
+         var barFirst = GetStartBarWhenScrollEnd();          //此為最大的StartDate。(因為bar的最後一根不可少於畫面的一半)
+         
+         if (date > barFirst.TimeStamp)
+            date = barFirst.TimeStamp;
 
-         var bars=DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+         var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
 
          if (bars.Bars.Count == 0)          //因為沒有資料
             return;
@@ -149,18 +62,18 @@ namespace QT.UI
          //@日期再修正。
          if (date < bars.Bars[0].TimeStamp)        //本來是用first，但出現了CA1826的警告。改用索引方式。[0]
             date = bars.Bars[0].TimeStamp;
-         if (date > bars.Bars[bars.Bars.Count-1].TimeStamp)
+         if (date > bars.Bars[bars.Bars.Count - 1].TimeStamp)
             date = bars.Bars[bars.Bars.Count - 1].TimeStamp;
 
-         
+
          Bar? bar;
 
          if (direction == FlowDirection.LeftToRight)        //向後
-            bar = bars.FindBar( date, FindDirection.Backward);
+            bar = bars.FindBar(date, FindDirection.Backward);
          else
-            bar = bars.FindBar( date, FindDirection.Forward);
+            bar = bars.FindBar(date, FindDirection.Forward);
 
-         if(bar == null)
+         if (bar == null)
             return;
 
          //修正bar
@@ -186,7 +99,7 @@ namespace QT.UI
             if (this.State.VisibleStart > bar.TimeStamp)             //當起始日大於限制時
                this.State.VisibleStart = bar.TimeStamp;          //設定新的StartDate
          }
-         
+
       }
 
 
@@ -214,7 +127,7 @@ namespace QT.UI
       Point _mouseDown_Point;
       DateTime _mouseDown_StartDate;
       double _mouseDown_OffsetX;
-      
+
 
       private void Dashboard_MouseWheel(object sender, MouseWheelEventArgs e)
       {
@@ -246,9 +159,6 @@ namespace QT.UI
          }
 
          this.State.RequestRefreshChartsUI();
-
-         
-
       }
 
 
@@ -259,7 +169,7 @@ namespace QT.UI
          this._mouseDown_StartDate = this.State.VisibleStart;
          this._mouseDown_OffsetX = this.State.OffsetX;
          this.State.IsDrag = true;                                                                //indicate the action of dashboard is in draging~
-         
+
 
       }
 
@@ -277,9 +187,10 @@ namespace QT.UI
       /// <summary>處理Dashboard位移與縮放</summary>
       private void Dashboard_MouseMove(object sender, MouseEventArgs e)
       {
-         
-         
-         if(this.State==ChartViewState.Empty)
+
+       
+
+         if (this.State == ChartViewState.Empty)
             return;
 
          //如果不是拖曳，則只更新選取的日期
@@ -290,8 +201,8 @@ namespace QT.UI
          }
 
 
-         d.WriteLine("Move");
 
+         System.Diagnostics.Debug.WriteLine($"Mouse Move - IsDrag: {this.State.IsDrag}");
 
          #region 如果正在拖曳，則進行拖曳的動作
          if (this.State.IsDrag == true)
@@ -305,7 +216,7 @@ namespace QT.UI
             {
                var point = Mouse.GetPosition(this);            //滑鼠的點
                double x移動距離 = point.X - this._mouseDown_Point.X;        //跟第一次點下去相比，位移了多少。
-              x移動距離 += this._mouseDown_OffsetX;                                    //再加回原來的偏移量。
+               x移動距離 += this._mouseDown_OffsetX;                                    //再加回原來的偏移量。
                int 移動數量 = (int)(x移動距離 / this.State.BarWidth);                 //跟第一次點下去相比，移動了多少bar數量
 
 
@@ -314,7 +225,7 @@ namespace QT.UI
 
                var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
                int startBarIndex = bars.IndexOfByDate(this._mouseDown_StartDate, FindDirection.Forward);
-               
+
                startBarIndex -= 移動數量;           //最新的startBarIndex
 
                if (startBarIndex >= bars.Bars.Count)                                               //index can not more than his count....
@@ -344,7 +255,7 @@ namespace QT.UI
                this.State.VisibleStart = bars.Bars[startBarIndex].TimeStamp;
                this.State.SelectedDate = this.GetSelectedDate();
                this.State.RequestRefreshChartsUI();
-               
+
             }
             else   //選取日期的決定是由Dashboard的固定線…
             {
@@ -360,7 +271,7 @@ namespace QT.UI
                if (bar == null)
                   return;
                this.State.VisibleStart = bar.TimeStamp;
-               
+
 
                //求出Dashboard上，StartDate最大的日期
                double percentWidth = this.ActualWidth * this.State.FixedDateLinePosition;
@@ -444,7 +355,17 @@ namespace QT.UI
          }//set
       }
 
+      protected override void OnRender(DrawingContext dc)
+      {
+         base.OnRender(dc);
 
+         // 畫滿整個控制項為黑色
+         dc.DrawRectangle(
+             Brushes.Transparent,
+             null,
+             new Rect(0, 0, ActualWidth, ActualHeight)
+         );
+      }
 
       //protected override void OnRender(DrawingContext drawingContext)
       //{
@@ -457,5 +378,7 @@ namespace QT.UI
 
 
 
-   }//cls
-}//ns
+
+
+   }
+}

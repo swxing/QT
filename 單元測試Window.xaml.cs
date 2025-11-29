@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using QT.Data;
 using QT.Data.API;
-using QT.Data.Repository;
+using QT.Data.Repos;
 using System.Windows;
 
 

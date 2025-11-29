@@ -9,10 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="UI\Charts\DashboardLid.xaml.cs" />
     <Compile Remove="UI\Charts\KLineChart.xaml.cs" />
   </ItemGroup>
 
   <ItemGroup>
+    <Page Remove="UI\Charts\DashboardLid.xaml" />
     <Page Remove="UI\Charts\KLineChart.xaml" />
   </ItemGroup>
 

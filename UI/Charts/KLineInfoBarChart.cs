@@ -12,8 +12,8 @@ namespace QT.UI.Charts
    {
       public Bar? CurrentBar { get; set; }
 
-      DashboardState _state = null!;
-      public required DashboardState State
+      ChartViewState _state = null!;
+      public required ChartViewState State
       { 
          get=> _state;
          set { 
@@ -21,7 +21,7 @@ namespace QT.UI.Charts
             _state.SelectedDateChanged += (s, e) => 
             {
                //get bar by date
-               var bar = QT.Data.Repository.DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+               var bar = QT.Data.Repos.DataService.GetBarSet(this.State.Symbol, this.State.Interval);
                var b = bar.FindBar(e.Date, FindDirection.Forward);
                this.Update(b);
             };
@@ -62,14 +62,16 @@ namespace QT.UI.Charts
              $"開 {bar.Open:F2} 高 {bar.High:F2} 低 {bar.Low:F2} 收 {bar.Close:F2} " +
              $"量 {bar.Volume:N0} ";
 
-         var leftText = new FormattedText(
-             left,
-             CultureInfo.CurrentUICulture,
-             FlowDirection.LeftToRight,
-             typeface,
-             fontSz,
-             Brushes.White,
-             dpi);
+         var leftText=Tools.GetFormattedText(left, Brushes.White, fontSz);
+
+         //var leftText = new FormattedText(
+         //    left,
+         //    CultureInfo.CurrentUICulture,
+         //    FlowDirection.LeftToRight,
+         //    typeface,
+         //    fontSz,
+         //    Brushes.White,
+         //    dpi);
 
          dc.DrawText(leftText, new Point(0, 0));
 
@@ -78,23 +80,25 @@ namespace QT.UI.Charts
          //-----------------------------------------
 
          string sign = change >= 0 ? "+" : "";
-         string right =
+         string rightMsg =
              $"漲幅 {sign}{change:F2} ({sign}{changeRate * 100:F2}%)";
 
          Brush changeBrush = change >= 0 ? Brushes.Red : Brushes.LimeGreen;
 
-         var rightText = new FormattedText(
-             right,
-             CultureInfo.CurrentUICulture,
-             FlowDirection.LeftToRight,
-             typeface,
-             fontSz,
-             changeBrush,
-             dpi);
+         //var rightText = new FormattedText(
+         //    right,
+         //    CultureInfo.CurrentUICulture,
+         //    FlowDirection.LeftToRight,
+         //    typeface,
+         //    fontSz,
+         //    changeBrush,
+         //    dpi);
+         var rightFt=Tools.GetFormattedText(rightMsg, changeBrush, fontSz);
+         
 
-         // 接在左邊後面
-         double x = leftText.WidthIncludingTrailingWhitespace;
-         dc.DrawText(rightText, new Point(x, 0));
+         
+         double x = leftText.WidthIncludingTrailingWhitespace;// 接在左邊後面
+         dc.DrawText(rightFt, new Point(x, 0));
       }
    }
 

@@ -13,8 +13,8 @@ namespace QT.UI.Charts
       
       }
 
-      DashboardState _state = null!;
-      public required DashboardState State
+      ChartViewState _state = null!;
+      public required ChartViewState State
       {
          get => _state;
          set { 
@@ -33,10 +33,10 @@ namespace QT.UI.Charts
 
          rect.Inflate(0, -4);          //reserve 上下4pixel
 
-         if(this._state==DashboardState.Empty)
+         if(this._state==ChartViewState.Empty)
             return;
 
-         var bars = QT.Data.Repository.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
+         var bars = QT.Data.Repos.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
          
          if (bars.Bars.Count == 0)
             return;
