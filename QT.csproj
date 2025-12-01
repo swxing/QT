@@ -9,16 +9,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="UI\Charts\DashboardLid.xaml.cs" />
-    <Compile Remove="UI\Charts\KLineChart.xaml.cs" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Page Remove="UI\Charts\DashboardLid.xaml" />
-    <Page Remove="UI\Charts\KLineChart.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.0" />
   </ItemGroup>
 
@@ -27,11 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ViewModels\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Update="Views\Dashboard.xaml.cs">
+    <Compile Update="UI.Views\Dashboard.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>

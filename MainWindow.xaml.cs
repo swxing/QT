@@ -1,9 +1,10 @@
 ﻿
 using QT.Data;
-using System.Windows;
-using System.Windows.Controls;
 using QT.UI;
 using QT.UI.Charts;
+using QT.UI.ViewModels;
+using System.Windows;
+using System.Windows.Controls;
 namespace QT
 {
     /// <summary>
@@ -18,49 +19,39 @@ namespace QT
 
       private void btnTest_Click(object sender, RoutedEventArgs e)
       {
+         QT.UI.Views.QuoteTickerBarV barV = new ();  
+         this.gridMain.Children.Add(barV);
+         return;
+
+
+
 
          this.CreateDashboard(); 
-         ////////////測試用的
-         //////////var State = new ChartViewState()
-         //////////{
-         //////////   Symbol = "3661",
-         //////////   Interval = BarInterval.Day,
-         //////////   VisibleStart = new DateTime(2025, 1, 1),
-         //////////};
-
-         //////////DashboardLid lid=new DashboardLid() { State = State };
-         //////////BackgroundChart gkChart=new BackgroundChart() { State = State };
-         //////////StateProcessor stateP = new () { State=State};
-         //////////KLineChart kline = new () { State=State};
-         //////////VolumnChart vChart=  new () { State=State};
-
-         //////////Grid grid = new Grid();
-         //////////grid.Children.Add(gkChart);
-         //////////grid.Children.Add(kline);
-         //////////grid.Children.Add(vChart);
-
-
-         //////////grid.Children.Add(stateP);
-         //////////grid.Children.Add(lid);
-
-
-         //////////this.Content = grid;
-
-
-
-
-
-
-
-
-
-
-
-
-
+         ///this.CreateSecurityQuoteBar();
 
       }//fn
 
+
+      QuoteTickerViewModel CurrentQuote;
+
+      private void CreateSecurityQuoteBar()
+      { 
+         //QT.UI.Views quoteBar = new ();
+         //CurrentQuote = new QuoteTickerViewModel
+         //{
+         //   Symbol = "2330",
+         //   Name = "台積電",
+         //   Last = 550.0f,
+         //   Change = 5.0f,
+         //   ChangeRate = 0.92f,
+         //   Volume = 12345678,
+
+         //};
+
+         //quoteBar.DataContext = CurrentQuote;
+         //this.gridMain.Children.Add(quoteBar);
+         //this.Background=System.Windows.Media.Brushes.Black;
+      }
 
       private void CreateDashboard()
       {
@@ -100,7 +91,34 @@ namespace QT
 
          //加入KLineChart
          var klineChart = new KLineChart() { State = State };
+         
+
+         //加入指標
+         Data.Indicators.SMAIndicator ma1= new Data.Indicators.SMAIndicator()
+         {
+            Symbol = State.Symbol,
+            Interval = State.Interval,
+            Days = 20,
+            LineBrush = System.Windows.Media.Brushes.Orange,
+            LineWidth = 1.5,
+         };
+
+         Data.Indicators.SMAIndicator ma2 = new Data.Indicators.SMAIndicator()
+         {
+            Symbol = State.Symbol,
+            Interval = State.Interval,
+            Days = 5,
+            LineBrush = System.Windows.Media.Brushes.White,
+            LineWidth = 3,
+         };
+
+         ma1.ReComputing();
+         ma2.ReComputing();
+         klineChart.AddIndicator(ma1);   
+         klineChart.AddIndicator(ma2);
+
          grid.Children.Add(klineChart);
+
 
          //加入KLineInfoBarChart
          var infoBarChart = new KLineInfoBarChart() { State = State };
@@ -128,7 +146,8 @@ namespace QT
          var stateProcessor = new ChartInteractionLayer() { State = State };
          grid.Children.Add(stateProcessor);
          Grid.SetRowSpan(stateProcessor, 3);   //跨三列
-         this.Content = grid;
+
+         this.gridMain.Children.Add(grid);
 
 
 
@@ -137,5 +156,16 @@ namespace QT
 
       }
 
+      private void btnTestWindow_Click(object sender, RoutedEventArgs e)
+      {
+         單元測試Window w = new ();  
+         w.ShowDialog();
+      }
+
+      private void btnTest2_Click(object sender, RoutedEventArgs e)
+      {
+         var price=System.Random.Shared.NextSingle();
+            this.CurrentQuote.UpdateQuote(price, 2.0f, 0.36f, 23456789);
+      }
    }//cls
 }

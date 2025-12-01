@@ -150,6 +150,7 @@ namespace QT.UI
          if (date < bars.Bars[0].TimeStamp)        //本來是用first，但出現了CA1826的警告。改用索引方式。[0]
             date = bars.Bars[0].TimeStamp;
          if (date > bars.Bars[bars.Bars.Count-1].TimeStamp)
+            
             date = bars.Bars[bars.Bars.Count - 1].TimeStamp;
 
          

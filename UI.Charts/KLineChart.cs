@@ -17,34 +17,23 @@ namespace QT.UI.Charts
       public KLineChart()
       {
          
-         this.Loaded += OnLoaded;
+
 
 
       }
 
-      private void OnLoaded(object sender, RoutedEventArgs e)
+
+
+
+      List<Data.Indicators.Indicator> _indicators = new List<Data.Indicators.Indicator>();
+
+
+
+
+      public void AddIndicator(Data.Indicators.Indicator indicator)
       {
-         // 避免 Loaded 被觸發多次
-         Loaded -= OnLoaded;
-
-         //_info = new KLineInfoBarChart()
-         //{
-         //   Height = 20,
-         //   VerticalAlignment = VerticalAlignment.Top,
-         //   IsHitTestVisible = false // 滑鼠穿透
-         //};
-
-
+         _indicators.Add(indicator);
       }
-
-
-
-
-
-
-
-
-
 
 
 
@@ -167,6 +156,45 @@ namespace QT.UI.Charts
 
             index++;
          }
+
+
+
+         foreach (var indicator in this._indicators)
+         {
+            if (indicator.IsVisible == false)
+               continue;
+            foreach (var indicatorVisual in indicator)
+            {
+               var pen = new Pen(indicatorVisual.Foreground, indicatorVisual.Width);
+               // var providerIndex = indicator.IndexOf(indicatorItem);
+               int maIndex = -1;
+               List<Point> maPoints = new List<Point>();
+               foreach (var trading in bars)
+               {
+                  maIndex++;
+                  var price = indicatorVisual.GetValue(trading.TimeStamp);
+                  if (float.IsNaN(price))           //NaN不能用price==float.NaN來判斷。
+                     continue;
+
+                  double x = State.BarWidth * maIndex + this.State.BarWidth * 1 / 2;               //逐一取得X 的位置。
+                  x += State.OffsetX;                                               //加上偏移量。
+                  double y = this.GetY(price);                                       //取得Y的正確位置。
+
+
+                  Point maPoint = new Point(x, y);
+                  maPoints.Add(maPoint);
+               }
+
+               var curvePoints = Tools.MakeCurvePoints(maPoints.ToArray(), 0.1);          //將點轉換成曲線。
+               if (curvePoints == null)
+                  continue;
+
+               PathGeometry geo = Tools.MakeBezierPath(curvePoints);
+               dc.DrawGeometry(null, pen, geo);                   //繪制。
+
+            }
+         }
+
 
 
 
