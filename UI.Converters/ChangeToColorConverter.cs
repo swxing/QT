@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Data;
 using System.Windows.Media;
 
-namespace QT.UI.Views
+namespace QT.UI.Converters
 {
    // 將布林值 (IsPositiveChange) 轉換為顏色
    public class ChangeToColorConverter : IValueConverter

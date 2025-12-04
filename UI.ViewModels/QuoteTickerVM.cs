@@ -7,7 +7,7 @@ namespace QT.UI.ViewModels
 
 
    /// <summary>給個股報價時用的VM</summary>
-   public class QuoteTickerViewModel : INotifyPropertyChanged
+   public class QuoteTickerVM : INotifyPropertyChanged
    {
       private string _symbol = "";
       private string _name = "";

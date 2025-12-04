@@ -80,7 +80,7 @@ namespace QT.UI.Charts
             barRect.Inflate(-1, 0);
 
             if (item.Close > item.Open)
-               drawingContext.DrawRectangle(Res.RiseBrush, null, barRect);
+               drawingContext.DrawRectangle(Res.UpBrush, null, barRect);
             else
                drawingContext.DrawRectangle(Res.DownBrush, null, barRect);
 

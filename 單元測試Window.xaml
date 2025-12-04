@@ -10,6 +10,8 @@
         <DataGrid x:Name="dg" Margin="5,140,10,10" d:ItemsSource="{d:SampleData ItemCount=5}"/>
         <WrapPanel Margin="5,15,5,0" Background="#FFFFC6C6" Height="120" VerticalAlignment="Top">
             <Button x:Name="btnCnYesGetBars" Content="GetCnYesBars" Click="btnCnYesGetBars_Click"/>
+            <Button x:Name="btnGetSecurity" Content="GetSecuritys" Click="btnGetSecurity_Click"/>
+            <Button x:Name="btnUpdateSecuritysToDB" Content="UpdateSecuritysToDB" Click="btnUpdateSecuritysToDB_Click"/>
         </WrapPanel>
 
     </Grid>

@@ -8,7 +8,7 @@ using System.Windows.Shapes;
 
 namespace QT.UI
 {
-   internal class Tools
+   public static  class Tools
    {
       /// <summary>字型大小為14。</summary>
       /// <param name="msg"></param>

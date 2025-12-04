@@ -4,8 +4,14 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:QT.UI.Views"
-             mc:Ignorable="d" Height="60" d:DesignWidth="775"  >
-    <StackPanel x:Name="stpMain" Orientation="Horizontal" >
-        <TextBlock x:Name="tebBar"/>
-    </StackPanel>
+             mc:Ignorable="d" Height="60" d:DesignWidth="775" Background="Gray"  FontSize="20" >
+    <TextBlock x:Name="tebBar" Margin="5,0,0,0" VerticalAlignment="Center" FontWeight="Bold" TextWrapping="Wrap"/>
+    <!--<StackPanel x:Name="stpMain" Orientation="Horizontal"  >
+        <TextBlock x:Name="tebSymbol"  Margin="2" VerticalAlignment="Bottom"/>
+        <TextBlock x:Name="tebName" FontSize="32" VerticalAlignment="Bottom" FontWeight="Bold" Margin="2" />
+        <TextBlock x:Name="tebLast" Margin="2" FontSize="32" VerticalAlignment="Bottom"/>
+        <TextBlock x:Name="tebChange" Margin="8" VerticalAlignment="Bottom"/>
+        <TextBlock x:Name="tebChangeRate" Margin="8" VerticalAlignment="Bottom"/>
+        <TextBlock x:Name="tebVolume" Margin="8" VerticalAlignment="Bottom"/>
+    </StackPanel>-->
 </UserControl>

@@ -17,40 +17,59 @@ namespace QT
             InitializeComponent();
         }
 
-      private void btnTest_Click(object sender, RoutedEventArgs e)
+      private async void btnTest_Click(object sender, RoutedEventArgs e)
       {
-         QT.UI.Views.QuoteTickerBarV barV = new ();  
-         this.gridMain.Children.Add(barV);
-         return;
-
-
-
+         
 
          this.CreateDashboard(); 
-         ///this.CreateSecurityQuoteBar();
+         //this.CreateSecurityQuoteBar();
 
       }//fn
 
 
-      QuoteTickerViewModel CurrentQuote;
+
+      private async Task<List<Stock>> GetTwseOtcStocks()
+      {
+
+         var stocks = await QT.Data.Api.TWSE.TwseTools.Get上市公司基本資料Async();
+         var otc_stocks = await QT.Data.Api.OTC.OTCClient.Get上櫃公司基本資料Async();
+         stocks.AddRange(otc_stocks);
+         return stocks;
+
+         ;
+
+
+
+
+
+
+      }
+
+
+
+      QuoteTickerVM CurrentQuote;
 
       private void CreateSecurityQuoteBar()
-      { 
-         //QT.UI.Views quoteBar = new ();
-         //CurrentQuote = new QuoteTickerViewModel
-         //{
-         //   Symbol = "2330",
-         //   Name = "台積電",
-         //   Last = 550.0f,
-         //   Change = 5.0f,
-         //   ChangeRate = 0.92f,
-         //   Volume = 12345678,
+      {
+         QT.UI.Views.QuoteTickerBarV barV = new();
 
-         //};
 
-         //quoteBar.DataContext = CurrentQuote;
-         //this.gridMain.Children.Add(quoteBar);
-         //this.Background=System.Windows.Media.Brushes.Black;
+         //建立一個VM
+         QuoteTickerVM vm = new QuoteTickerVM()
+         {
+            Symbol = "2317",
+            Name = "鴻海",
+            Last = 102.5f,
+            Change = 1.5f,
+            ChangeRate = 0.014f,
+            Volume = 98765432,
+         };
+
+         barV.DataContext = vm;
+
+         this.gridMain.Children.Add(barV);
+         return;
+
       }
 
       private void CreateDashboard()
@@ -62,6 +81,7 @@ namespace QT
             Interval = BarInterval.Day,
             VisibleStart = new DateTime(2025, 1, 1),
          };
+
 
 
          Grid grid = new Grid();
@@ -93,29 +113,29 @@ namespace QT
          var klineChart = new KLineChart() { State = State };
          
 
-         //加入指標
-         Data.Indicators.SMAIndicator ma1= new Data.Indicators.SMAIndicator()
-         {
-            Symbol = State.Symbol,
-            Interval = State.Interval,
-            Days = 20,
-            LineBrush = System.Windows.Media.Brushes.Orange,
-            LineWidth = 1.5,
-         };
+         ////////加入指標
+         //////Data.Indicators.SMAIndicator ma1= new Data.Indicators.SMAIndicator()
+         //////{
+         //////   Symbol = State.Symbol,
+         //////   Interval = State.Interval,
+         //////   Days = 20,
+         //////   LineBrush = System.Windows.Media.Brushes.Orange,
+         //////   LineWidth = 1.5,
+         //////};
 
-         Data.Indicators.SMAIndicator ma2 = new Data.Indicators.SMAIndicator()
-         {
-            Symbol = State.Symbol,
-            Interval = State.Interval,
-            Days = 5,
-            LineBrush = System.Windows.Media.Brushes.White,
-            LineWidth = 3,
-         };
+         //////Data.Indicators.SMAIndicator ma2 = new Data.Indicators.SMAIndicator()
+         //////{
+         //////   Symbol = State.Symbol,
+         //////   Interval = State.Interval,
+         //////   Days = 5,
+         //////   LineBrush = System.Windows.Media.Brushes.White,
+         //////   LineWidth = 3,
+         //////};
 
-         ma1.ReComputing();
-         ma2.ReComputing();
-         klineChart.AddIndicator(ma1);   
-         klineChart.AddIndicator(ma2);
+         //////ma1.ReComputing();
+         //////ma2.ReComputing();
+         //////klineChart.AddIndicator(ma1);   
+         //////klineChart.AddIndicator(ma2);
 
          grid.Children.Add(klineChart);
 
@@ -130,17 +150,17 @@ namespace QT
          Grid.SetRow(volumeChart, 1);
 
          //加入日期軸
-         var dateChart = new DateTimeChart() { State = State, Height = 22 };
+         //////var dateChart = new DateTimeChart() { State = State, Height = 22 };
 
-         grid.Children.Add(dateChart);
-         Grid.SetRow(dateChart, 2);
+         //////grid.Children.Add(dateChart);
+         //////Grid.SetRow(dateChart, 2);
 
 
-         //加上Dashboard Lid
-         var dashboardLid = new DashboardLid() { State = State };
-         dashboardLid.State = State;
-         grid.Children.Add(dashboardLid);
-         Grid.SetRowSpan(dashboardLid, 3);      //跨兩列
+         ////////加上Dashboard Lid
+         //////var dashboardLid = new DashboardLid() { State = State };
+         //////dashboardLid.State = State;
+         //////grid.Children.Add(dashboardLid);
+         //////Grid.SetRowSpan(dashboardLid, 3);      //跨兩列
 
          //加入State Processor
          var stateProcessor = new ChartInteractionLayer() { State = State };

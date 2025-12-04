@@ -118,7 +118,7 @@ namespace QT.UI.Charts
             KShadowLineP2.Offset(State.OffsetX, 0);
 
             if (bar.Close >= bar.Open)
-               dc.DrawLine(Res.RisePen, KShadowLineP1, KShadowLineP2);
+               dc.DrawLine(Res.UpPen, KShadowLineP1, KShadowLineP2);
             else
                dc.DrawLine(Res.DownPen, KShadowLineP1, KShadowLineP2);
 
@@ -146,7 +146,7 @@ namespace QT.UI.Charts
                kRect.Height = 1;
 
             if (bar.Close >= bar.Open)
-               dc.DrawRectangle(Res.RiseBrush, null, kRect);
+               dc.DrawRectangle(Res.UpBrush, null, kRect);
             else
                dc.DrawRectangle(Res.DownBrush, null, kRect);
 
