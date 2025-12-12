@@ -2,7 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using QT.Data;
 using QT.Data.API;
-using QT.Data.Repos;
+
 using System.Windows;
 
 
@@ -83,7 +83,7 @@ namespace QT
 
 
          //add a new security set
-         SecuritySet set = new SecuritySet()
+         StockSet set = new StockSet()
          {
             Name="我的自選股",
             Description="這是我的自選股清單",

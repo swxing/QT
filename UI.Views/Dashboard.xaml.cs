@@ -1,6 +1,6 @@
 ﻿using QT.UI.Charts;
 using QT.Data;
-using QT.Data.Repos;
+
 using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;

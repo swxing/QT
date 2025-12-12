@@ -36,7 +36,7 @@ namespace QT.UI.Charts
          if(this._state==ChartViewState.Empty)
             return;
 
-         var bars = QT.Data.Repos.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
+         var bars = QT.Data.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
          
          if (bars.Bars.Count == 0)
             return;

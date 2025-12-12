@@ -21,7 +21,7 @@ namespace QT.UI.Charts
             _state.SelectedDateChanged += (s, e) => 
             {
                //get bar by date
-               var bar = QT.Data.Repos.DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+               var bar = QT.Data.DataService.GetBarSet(this.State.Symbol, this.State.Interval);
                var b = bar.FindBar(e.Date, FindDirection.Forward);
                this.Update(b);
             };

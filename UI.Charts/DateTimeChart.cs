@@ -49,7 +49,7 @@ namespace QT.UI.Charts
 
          
 
-         var his = QT.Data.Repos.DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+         var his = QT.Data.DataService.GetBarSet(this.State.Symbol, this.State.Interval);
          int count = (int)(this.ActualWidth / this.State.BarWidth);       //how many bar can inside of the control
          var index = his.IndexOfByDate(this.State.VisibleStart, Data.FindDirection.Forward);
 

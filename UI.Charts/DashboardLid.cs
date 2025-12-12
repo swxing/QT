@@ -101,7 +101,7 @@ namespace QT.UI.Charts
          if (this._state.SelectedDate != null)
          {
             //var his = TradingSet.GetTradingSet(this._state.Stock.Token);
-            var his = QT.Data.Repos.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
+            var his = QT.Data.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
             var index = his.IndexOfByDate(this._state.VisibleStart, Data.FindDirection.Forward);                     //圖上的第一個日期
             var index2 = his.IndexOfByDate(this._state.SelectedDate.Value, Data.FindDirection.Forward);           //滑鼠選取的日期
             double x0 = this._state.OffsetX + this._state.BarWidth * (index2 - index);

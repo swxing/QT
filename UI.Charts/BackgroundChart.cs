@@ -76,7 +76,7 @@ namespace QT.UI.Charts
             return;
 
          
-         var ts = QT.Data.Repos.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
+         var ts = QT.Data.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
          var index = ts.IndexOfByDate(this._state.VisibleStart, Data.FindDirection.Forward);
          if (index == -1)
             return;
