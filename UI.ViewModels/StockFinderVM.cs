@@ -10,21 +10,15 @@ namespace QT.UI.ViewModels
    public class StockFinderVM:System.ComponentModel.INotifyPropertyChanged
    {
       // 這是您在 XAML 中 ListView.ItemsSource 所綁定的集合
-      public ObservableCollection<StockVM> QuotesCollection { get; set; }
+      public ObservableCollection<StockVM> StockVMs { get; set; }
 
       public StockFinderVM()
       {
          //載入所有的個股。
-         QuotesCollection = new ObservableCollection<StockVM>();
-        
+         StockVMs = new ObservableCollection<StockVM>();
 
-       
       }
 
-
-      // ===============================================
-      // INotifyPropertyChanged 實作
-      // ===============================================
 
       public event PropertyChangedEventHandler PropertyChanged;
 

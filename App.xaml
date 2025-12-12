@@ -8,7 +8,7 @@
     <Application.Resources>
         <Style TargetType="Window">
             <Setter Property="FontFamily" Value="Microsoft JhengHei" />
-            <Setter Property="FontSize" Value="32" /> 
+            <Setter Property="FontSize" Value="16" /> 
         </Style>
     </Application.Resources>
 </Application>

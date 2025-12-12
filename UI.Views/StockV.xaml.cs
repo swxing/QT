@@ -22,8 +22,38 @@ namespace QT.UI.Views
       public StockV()
       {
          InitializeComponent();
+         this.DataContextChanged += StockV_DataContextChanged;
+         this.Loaded += StockV_Loaded;
       }
 
+
+      static Charts.ChartViewState _state = null;
+
+      private void StockV_Loaded(object sender, RoutedEventArgs e)
+      {
+         
+         if(_state==null)
+         {
+            _state = new Charts.ChartViewState()
+            {
+               Symbol = "3661",
+               VisibleStart = DateTime.Now.AddMonths(-6),
+               BarWidth = 20
+            };
+
+            
+            
+
+         }
+            
+
+      }
+
+      private void StockV_DataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+      {
+         
+      //   this.CurrentQuote= this.DataContext as QT.UI.ViewModels.StockVM;
+      }
 
       StockVM _stockVm;
       public required StockVM CurrentQuote
@@ -34,7 +64,8 @@ namespace QT.UI.Views
             if (_stockVm != value)
             {
                _stockVm = value;
-               this.lblName.Content = this._stockVm.Symbol;          //先暫時性的
+               //this.lblName.Content = "3661";
+              ///this.lblName.Background = Brushes.AliceBlue;
             }
          }
       }

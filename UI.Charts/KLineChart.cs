@@ -63,8 +63,22 @@ namespace QT.UI.Charts
 
       protected override void OnRender(DrawingContext dc)
       {
-
+         
+         //if(this.IsLoaded==false)
+            //return;
          d.WriteLine($"KLineChart OnRender {_count++} times.");
+
+         //if (this._state == null)
+         //{
+         //   this._state = new ChartViewState()
+         //   {
+         //      Symbol = "3661",
+         //      Interval = BarInterval.Day,
+         //      VisibleStart = new DateTime(2025, 1, 1),
+         //   };
+         //}
+            
+
 
          if (this.State == null || string.IsNullOrEmpty(State.Symbol))
             return;

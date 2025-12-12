@@ -4,40 +4,38 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:QT.UI.Views"
+             xmlns:vm="clr-namespace:QT.UI.ViewModels"
              xmlns:views="clr-namespace:QT.UI.Views"
              mc:Ignorable="d" 
              d:DesignHeight="450" d:DesignWidth="800">
-    <Grid>
+    <UserControl.DataContext>
+        <vm:StockFinderVM/>
+    </UserControl.DataContext>
 
-        <ListView ItemsSource="{Binding QuotesCollection}"
-                  SelectedItem="{Binding SelectedStock, Mode=TwoWay}"
-                  BorderThickness="0"
-                  Background="Transparent"
-                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+    <Grid>
+        <ListView ItemsSource="{Binding StockVMs}" 
+                  ScrollViewer.CanContentScroll="True" 
+                  SelectionMode="Single"
+                  Margin="0">
 
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>
-                    <VirtualizingStackPanel/>
+                    <VirtualizingStackPanel IsVirtualizing="True"  VirtualizationMode="Recycling"  />
                 </ItemsPanelTemplate>
             </ListView.ItemsPanel>
 
-            <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
-                    <Setter Property="Padding" Value="0"/>
-                    <Setter Property="Margin" Value="0"/>
-                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                    <Style.Resources>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#33373D"/>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#33373D"/>
-                    </Style.Resources>
-                </Style>
-            </ListView.ItemContainerStyle>
-
             <ListView.ItemTemplate>
-                <DataTemplate>
-                    <views:StockV/>
+                <DataTemplate DataType="{x:Type vm:StockVM}">
+                    <views:StockV />
                 </DataTemplate>
             </ListView.ItemTemplate>
+
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Padding" Value="0"/>
+                </Style>
+            </ListView.ItemContainerStyle>
 
         </ListView>
     </Grid>
