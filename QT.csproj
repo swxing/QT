@@ -17,6 +17,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\BravoSky.Resource\BravoSky.Resource.csproj" />
+    <ProjectReference Include="..\QT.Core\QT.Core.csproj" />
     <ProjectReference Include="..\QT.Data\QT.Data.csproj" />
   </ItemGroup>
 

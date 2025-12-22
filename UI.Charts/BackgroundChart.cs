@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Media;
+using QT.Core;
 namespace QT.UI.Charts
 {
    public class SelectionPlot
@@ -76,32 +77,32 @@ namespace QT.UI.Charts
             return;
 
          
-         var ts = QT.Data.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
-         var index = ts.IndexOfByDate(this._state.VisibleStart, Data.FindDirection.Forward);
+         var bars = QT.Data.BarSet.GetBarSet(this._state.Symbol, this._state.Interval);
+         var index = bars.IndexOfByDate(this._state.VisibleStart, Data.FindDirection.Forward);
          if (index == -1)
             return;
 
          int count = (int)(rect.Width / this._state.BarWidth);
-         if (index + count > ts.Bars.Count)
-            count = ts.Bars.Count - index;
-         var items = ts.GetRange(index, count);
-         int month = items[0].TimeStamp.Month;
+         if (index + count > bars.Bars.Count)
+            count = bars.Bars.Count - index;
+         var selBars = bars.GetRange(index, count);
+         int month = selBars[0].TimeStamp.Month;
          double x0 = 0;
          double x1 = 0;
 
 
          #region @ draw every month line
-         foreach (var item in items)
+         foreach (var item in selBars)
          {
-            if (item.TimeStamp.Month == month && item != items.Last())
+            if (item.TimeStamp.Month == month && item != selBars.Last())
                continue;
 
             month = item.TimeStamp.Month;
-            x1 = this._state.OffsetX + this._state.BarWidth * items.IndexOf(item);
+            x1 = this._state.OffsetX + this._state.BarWidth * selBars.IndexOf(item);
             Point p1 = new Point(x0, 0);
             Point p2 = new Point(x1, rect.Height);
 
-            if (items.Last() == item)
+            if (selBars.Last() == item)
                p2 = rect.BottomRight;
 
             Rect rectM = new Rect(p1, p2);
@@ -116,14 +117,14 @@ namespace QT.UI.Charts
 
          //@ draw selectionBar
 
-         var selections = this._selectionPlots.FindAll(temp => temp.Date >= items[0].TimeStamp
-         && temp.Date <= items[items.Count-1].TimeStamp);
+         var selections = this._selectionPlots.FindAll(temp => temp.Date >= selBars[0].TimeStamp
+         && temp.Date <= selBars[selBars.Count-1].TimeStamp);
 
 
          dc.PushOpacity(0.3);
          foreach (var selection in selections)
          {
-            index = ts.IndexOfByDate(selection.Date,Data.FindDirection.Forward) - ts.IndexOfByDate(this._state.VisibleStart, Data.FindDirection.Forward);
+            index = bars.IndexOfByDate(selection.Date,Data.FindDirection.Forward) - bars.IndexOfByDate(this._state.VisibleStart, Data.FindDirection.Forward);
             double x = this._state.BarWidth * index;
             x += this._state.OffsetX;
 

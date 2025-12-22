@@ -11,10 +11,25 @@ namespace QT.UI.Charts
       /// <summary>空的State，方便判斷用的。</summary>
       public static ChartViewState Empty = new();
 
+
+      /// <summary>是否採用日期固定線</summary>
       public bool IsFixedDateLine { get; set; }
 
+
+      public string _symbol = "";
+      
+      
       /// <summary>股票代碼</summary>
-      public string Symbol { get; init; } = "";
+      public string Symbol
+      { 
+         get=> _symbol;
+         set { 
+            if(this._symbol == value)
+               return;
+            this._symbol = value;
+            SymbolChanged?.Invoke(this, value);
+         }
+      }
       
       
       /// <summary>Interval</summary>
@@ -34,14 +49,16 @@ namespace QT.UI.Charts
       public DateTime VisibleStart { get; set; }
       
 
-      DateTime? _selectedDate;
-      public DateTime? SelectedDate
+      DateTime? _selectedDateTime;
+      
+      // <summary>選取的日期時間。注意：有包含分K，所以支援時間的。例如9:01，9:02; 9:03…</summary>
+      public DateTime? SelectedDateTime
       { 
-         get=> _selectedDate;
+         get=> _selectedDateTime;
          set { 
-            if(this._selectedDate == value)
+            if(this._selectedDateTime == value)
                return;
-            this._selectedDate = value;
+            this._selectedDateTime = value;
             OnSelectionDateChanged(value ?? DateTime.MinValue);
          }
       }
@@ -93,7 +110,7 @@ namespace QT.UI.Charts
          DragStarted?.Invoke();
       }
 
-      /// <summary>請求將Charts全部重繪</summary>
+      /// <summary>請求將Charts全部重繪，有批次更新的問題，所以不用屬性變更即繪，用這個方法進行繪制。</summary>
       public void RequestRefreshChartsUI()
       {
          RefreshChartsUiRequested?.Invoke(); 

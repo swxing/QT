@@ -12,9 +12,12 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using QT.UI.ViewModels;
 using vm=QT.UI.ViewModels;
-
+using QT.Core;
 namespace QT.UI.Views
 {
+
+
+
    /// <summary>表示Dashboard上方的個股View</summary>
    public partial class QuoteTickerBarV : UserControl
    {
@@ -34,15 +37,13 @@ namespace QT.UI.Views
             var vm = this.DataContext as vm.QuoteTickerVM 
                ?? throw new InvalidOperationException("DataContext必須是QuoteTickerVM");
 
-            this.UpdateQuoteTextBlock();
-
-
-            vm.PropertyChanged += (s, e) =>
-            {
-               //如果價格有變動，則更新整個跑馬燈的內容
-               if (e.PropertyName == nameof(vm.Last))
-                  this.UpdateQuoteTextBlock();
-            };
+            //this.UpdateUI();              //更新UI
+            //vm.PropertyChanged += (s, e) =>
+            //{
+            //   //如果價格有變動，則更新整個跑馬燈的內容
+            //   //if (e.PropertyName == nameof(vm.Last))
+            //      this.UpdateUI();
+            //};
          };
 
 
@@ -71,14 +72,14 @@ namespace QT.UI.Views
 
 
 
-      private void UpdateQuoteTextBlock()
-      {
-         this.tebBar.Inlines.Clear();
-         var inline = CreateQuoteTextBlock();
-         this.tebBar.Inlines.Add(inline);
-      }
+      //private void UpdateUI()
+      //{
+      //   this.tebBar.Inlines.Clear();
+      //   var inline = CreateQuoteTextBlock();
+      //   this.tebBar.Inlines.Add(inline);
+      //}
 
-      
+
 
 
 
@@ -105,10 +106,10 @@ namespace QT.UI.Views
          else
             fg = Res.FlatBrush;
 
-         string msg=QT.Core.PriceFormatHelper.FormatByPrice(vm.Last);
+         string msg=QT.Core.Helper.FormatByPrice(vm.Last);
          span.Inlines.Add(Create(msg+"  ", 22, fg, Brushes.Transparent, FontWeights.Bold));
 
-         msg= QT.Core.PriceFormatHelper.FormatByPrice(vm.Change);
+         msg= QT.Core.Helper.FormatByPrice(vm.Change);
          span.Inlines.Add(Create(msg + "  ", 22, fg, Brushes.Transparent, FontWeights.Normal));
 
          msg = vm.ChangeRate.ToString("P2");
@@ -123,12 +124,6 @@ namespace QT.UI.Views
 
 
       /// <summary>建立單獨的一個Run，</summary>
-      /// <param name="text"></param>
-      /// <param name="fontSize"></param>
-      /// <param name="foreground"></param>
-      /// <param name="background"></param>
-      /// <param name="weight"></param>
-      /// <returns></returns>
       private static Run Create(    string text,    double fontSize,    Brush foreground,    Brush? background,    FontWeight weight)
       {
          var run= new Run(text)

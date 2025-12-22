@@ -8,6 +8,8 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
+using QT.Core;
+using QT.Data;
 
 namespace QT.UI.Charts
 {
@@ -52,16 +54,12 @@ namespace QT.UI.Charts
       private void State_SelectionDateChanged(object? sender, DateTime e)
       {
          this.InvalidateVisual();
-
       }
 
 
 
       protected override void OnRender(DrawingContext dc)
       {
-
-         //System.Diagnostics.Debug.WriteLine("進入");
-
          if (this._state == ChartViewState.Empty)
             return;
 
@@ -69,11 +67,8 @@ namespace QT.UI.Charts
          if (this._state == null || string.IsNullOrEmpty(this._state.Symbol) )
             return;
 
-
-
          if (this._state.IsDrag)
             return;                  //拖曳中，不繪制十字線
-
 
          var mouseP = Mouse.GetPosition(this);
 
@@ -98,12 +93,12 @@ namespace QT.UI.Charts
 
          #region @ 繪制Rectangle(選取的日期)
 
-         if (this._state.SelectedDate != null)
+         if (this._state.SelectedDateTime != null)
          {
             //var his = TradingSet.GetTradingSet(this._state.Stock.Token);
-            var his = QT.Data.DataService.GetBarSet(this._state.Symbol, this._state.Interval);
+            var his = BarSet.GetBarSet(this._state.Symbol, this._state.Interval);
             var index = his.IndexOfByDate(this._state.VisibleStart, Data.FindDirection.Forward);                     //圖上的第一個日期
-            var index2 = his.IndexOfByDate(this._state.SelectedDate.Value, Data.FindDirection.Forward);           //滑鼠選取的日期
+            var index2 = his.IndexOfByDate(this._state.SelectedDateTime.Value, Data.FindDirection.Forward);           //滑鼠選取的日期
             double x0 = this._state.OffsetX + this._state.BarWidth * (index2 - index);
             double x1 = x0 + this._state.BarWidth;
             Point vP0 = new(x0, 0);
@@ -111,28 +106,22 @@ namespace QT.UI.Charts
             SolidColorBrush b = new(Color.FromArgb(30, 192, 192, 192));
             dc.DrawRectangle(b, null, new Rect(vP0, vP1));
 
-
-            
             //繪制日期。
-            var typeface = new Typeface("微軟正黑體");
-            double fontSz = 16.0;
-            var dpi = VisualTreeHelper.GetDpi(this).PixelsPerDip;
-            var leftText = new FormattedText(this._state.SelectedDate.Value.ToString("yyyy/MM/dd"),
+            string msg= this._state.SelectedDateTime.Value.ToString("yyyy/MM/dd");
+            var leftText = QT.UI.Tools.GetFormattedText(msg, Brushes.White,18);
+            //////////var leftText = new FormattedText(this._state.SelectedDate.Value.ToString("yyyy/MM/dd"),
+            //////////CultureInfo.CurrentUICulture, FlowDirection.LeftToRight, typeface, fontSz,       Brushes.White,       dpi);
 
-       CultureInfo.CurrentUICulture,
-       FlowDirection.LeftToRight,
-       typeface,
-       fontSz,
-       Brushes.White,
-       dpi);
 
-            double  x =x0 -(leftText.Width / 2) + (x1-x0)/2;
-            var p = new Point(x, this.ActualHeight);
-
-            Rect rt=new Rect(p, new Size(leftText.Width, leftText.Height)); ;
-            dc.DrawRectangle(Brushes.DarkKhaki, null, rt);
-
-            dc.DrawText(leftText, p);
+            //方框擴大寬各5px, 高各2px
+            double x =x0 -(leftText.Width / 2) + (x1-x0)/2;
+            var 左上 = new Point(x, this.ActualHeight-22);        //繪制在底部往上22px，所以需要減去22px。
+            Rect rt=new Rect(左上, new Size(leftText.Width, leftText.Height));
+            rt.Inflate(5, 2);
+            dc.DrawRectangle(Brushes.Black, Res.FlatPen, rt);
+            
+            rt.Inflate(-5, 2);
+            dc.DrawText(leftText, 左上);
 
 
             

@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Text;
+using QT.Data;
 
 namespace QT.UI.ViewModels
 {
@@ -17,6 +18,22 @@ namespace QT.UI.ViewModels
          //載入所有的個股。
          StockVMs = new ObservableCollection<StockVM>();
 
+      }
+
+
+      //建立一個股選取的屬性
+      private StockVM? _selectedStockVM;
+      public StockVM? SelectedStockVM
+      {
+         get => _selectedStockVM;
+         set
+         {
+            if (_selectedStockVM != value)
+            {
+               _selectedStockVM = value;
+               OnPropertyChanged();
+            }
+         }
       }
 
 

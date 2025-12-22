@@ -8,13 +8,18 @@
         Title="單元測試Window" d:DesignHeight="550" d:DesignWidth="750" >
     <Grid>
         <WrapPanel Margin="5,15,5,0" Background="#FFFFC6C6" Height="120" VerticalAlignment="Top">
-            <Button x:Name="btnCnYesGetBars" Content="GetCnYesBars" Click="btnCnYesGetBars_Click"/>
+            <Button x:Name="btnCnYesGetBars" Content="取得Bars從CNYes" Click="btnCnYesGetBars_Click"/>
             <Button x:Name="btnGetSecurity" Content="GetSecuritys" Click="btnGetSecurity_Click"/>
             <Button x:Name="btnUpdateSecuritysToDB" Content="UpdateSecuritysToDB" Click="btnUpdateSecuritysToDB_Click"/>
             <Button x:Name="btnAddSecuritySet" Content="AddSecuritySet" Click="btnAddSecuritySet_Click"/>
             <Button x:Name="btnStockFinder" Content="StockFinder" Click="btnStockFinder_Click"/>
+            <Button x:Name="btnGetEPS" Content="取得EPS從CNYes" Click="btnGetEPS_Click"/>
+            <Button x:Name="btnRevenue" Content="營收取得" Click="btnRevenue_Click"/>
+            <Button x:Name="btnAddStock" Content="導入一檔個股" Click="btnAddStock_Click"/>
+            <Button x:Name="btn股息" Content="股息" Click="btn股息_Click"/>
+            <Button x:Name="btn統計項" Content="股息" Click="btn統計項_Click"/>
         </WrapPanel>
-        <Grid x:Name="gdContent" Background="AliceBlue" Margin="0,150,0,0"/>
+        <Grid x:Name="grid" Background="AliceBlue" Margin="0,150,0,0"/>
 
     </Grid>
 </Window>

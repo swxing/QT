@@ -2,6 +2,7 @@
   <Folder Name="/doc/">
     <File Path="use_case.md" />
   </Folder>
+  <Project Path="../BravoSky.Resource/BravoSky.Resource.csproj" />
   <Project Path="../QT.Core/QT.Core.csproj" Id="39e5ff2b-bcb3-426d-a4da-62ba948531d5" />
   <Project Path="../QT.Data/QT.Data.csproj" />
   <Project Path="QT.csproj" />

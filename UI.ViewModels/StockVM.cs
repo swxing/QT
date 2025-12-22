@@ -29,7 +29,7 @@ namespace QT.UI.ViewModels
 
 
       
-      /// <summary>在設計模式時使用的。</summary>
+      /// <summary>在設計模式時使用的，方便呈現在設計階段的UI。</summary>
       public static StockVM DesignInstance
       {
          get { 

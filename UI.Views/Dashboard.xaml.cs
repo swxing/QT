@@ -125,7 +125,7 @@ namespace QT.UI
       public DateTime GetStartBarWhenScrollEnd()
       {
          //畫面上呈現的Bar不可少於劃面的一半
-         var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+         var bars = BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
          double realBarWidth = this.barWidth * this.ScaleRate;
          int count = (int)(this.ActualWidth / realBarWidth / 2);          //可容納的bar數量
          var startBar = bars.Bars[bars.Bars.Count - count - 1];            //取得畫面為一半時的起始Bar
@@ -141,7 +141,7 @@ namespace QT.UI
          if (date > maxDate)
             date = maxDate;
 
-         var bars=DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+         var bars= BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
 
          if (bars.Bars.Count == 0)          //因為沒有資料
             return;
@@ -168,7 +168,7 @@ namespace QT.UI
 
 
          this.State.VisibleStart = bar.TimeStamp;
-         this.State.SelectedDate = this.GetSelectedDate();
+         this.State.SelectedDateTime = this.GetSelectedDate();
 
 
          //@ 針算出新的StartDate
@@ -271,7 +271,7 @@ namespace QT.UI
          this._mouseDown_StartDate = this.State.VisibleStart;
          this._mouseDown_OffsetX = this.State.OffsetX;
          this.State.IsDrag = false;
-         this.State.SelectedDate = this.GetSelectedDate();
+         this.State.SelectedDateTime = this.GetSelectedDate();
       }
 
 
@@ -286,7 +286,7 @@ namespace QT.UI
          //如果不是拖曳，則只更新選取的日期
          if (this.State.IsDrag == false)
          {
-            this.State.SelectedDate = this.GetSelectedDate();
+            this.State.SelectedDateTime = this.GetSelectedDate();
             return;
          }
 
@@ -313,7 +313,7 @@ namespace QT.UI
 
                //移動的距離沒問題。
 
-               var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+               var bars = BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
                int startBarIndex = bars.IndexOfByDate(this._mouseDown_StartDate, FindDirection.Forward);
                
                startBarIndex -= 移動數量;           //最新的startBarIndex
@@ -343,7 +343,7 @@ namespace QT.UI
                this.State.OffsetX = x移動距離 % this.State.BarWidth;                               //餘數為偏移量
                //this.State.OffsetX = 0;
                this.State.VisibleStart = bars.Bars[startBarIndex].TimeStamp;
-               this.State.SelectedDate = this.GetSelectedDate();
+               this.State.SelectedDateTime = this.GetSelectedDate();
                this.State.RequestRefreshChartsUI();
                
             }
@@ -356,7 +356,7 @@ namespace QT.UI
                var realBarWidth = this.barWidth * this.ScaleRate;
                int offsetCount = (int)(offsetX / realBarWidth);               //移動的bar數量
                offsetCount = -offsetCount;                                                   //因為是反向的
-               var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+               var bars = BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
                var bar = bars.FindBar(this._mouseDown_StartDate, FindDirection.Forward, offsetCount);     //找出實際的日期了。
                if (bar == null)
                   return;
@@ -373,7 +373,7 @@ namespace QT.UI
 
                if (this.State.VisibleStart > trading.TimeStamp)             //當起始日大於限制時
                   this.State.VisibleStart = trading.TimeStamp;          //設定新的StartDate
-               this.State.SelectedDate = this.GetSelectedDate();
+               this.State.SelectedDateTime = this.GetSelectedDate();
 
                this.State.RequestRefreshChartsUI();
             }
@@ -396,7 +396,7 @@ namespace QT.UI
          if (this.State.Symbol == null)
             return null;
 
-         var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+         var bars = BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
 
          x = x - this.State.OffsetX;                                            //把偏移去除掉。
          double indexD = x / (barWidth * this.ScaleRate);          //縮放後，bar的寬度
@@ -431,7 +431,7 @@ namespace QT.UI
             var barWidth = this.barWidth * value;
             int count = (int)(point.X / barWidth);                         //current width can hold how many bar
 
-            var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+            var bars = BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
             var index = bars.Bars.ToList().IndexOf(currentItem!);               //!表示不可能為null，就開發人員自己負責。
 
             index = index - count + 1;

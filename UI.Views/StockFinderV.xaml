@@ -13,10 +13,7 @@
     </UserControl.DataContext>
 
     <Grid>
-        <ListView ItemsSource="{Binding StockVMs}" 
-                  ScrollViewer.CanContentScroll="True" 
-                  SelectionMode="Single"
-                  Margin="0">
+        <ListView x:Name="livStocks" ItemsSource="{Binding StockVMs}" ScrollViewer.CanContentScroll="True" SelectionMode="Single"  Margin="0">
 
             <ListView.ItemsPanel>
                 <ItemsPanelTemplate>

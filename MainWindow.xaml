@@ -4,21 +4,38 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QT"
-    xmlns:Control="QT"
-    
-    
-    
-         x:Class="QT.MainWindow"
+        xmlns:qt="clr-namespace:QT"
+    xmlns:qtcore="clr-namespace:QT.Core;assembly=QT.Core"
+    xmlns:Views="clr-namespace:QT.UI.Views"
+    x:Class="QT.MainWindow"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <Grid x:Name="grid">
+    <Grid x:Name="grid" Background="{x:Static qtcore:Res.DiaBkBrush}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="4*"/>
+        </Grid.ColumnDefinitions>
+
+        <GridSplitter x:Name="gridSplitter" Focusable="False"  Background="Black" Margin="0,0,-4,0" Grid.ColumnSpan="1" Width="8"/>
+        <Button x:Name="btnTestWindow" Content="測試視窗" HorizontalAlignment="Left" Margin="10,6,0,0" VerticalAlignment="Top" Height="40" Width="70" Click="btnTestWindow_Click"/>
+        <Grid x:Name="gridChart" Margin="10,6,10,10" Grid.Column="2">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="60"/>
+                <RowDefinition Height="74*"/>
+            </Grid.RowDefinitions>
+        </Grid>
 
 
-
-        <Button x:Name="btnTest" Content="Button" HorizontalAlignment="Left" Margin="10,65,0,0" VerticalAlignment="Top" Height="40" Width="70" Click="btnTest_Click"/>
-        <Button x:Name="btnTestWindow" Content="測試視窗" HorizontalAlignment="Left" Margin="10,20,0,0" VerticalAlignment="Top" Height="40" Width="70" Click="btnTestWindow_Click"/>
-        <Grid x:Name="gridMain" Margin="140,20,10,10"/>
-        <Button x:Name="btnTest2" Content="Button" HorizontalAlignment="Left" Margin="10,110,0,0" VerticalAlignment="Top" Height="40" Width="70" Click="btnTest2_Click"/>
+        <Views:StockFinderV x:Name="stockFinder" Margin="0,51,4,0" />
+        <GridSplitter Grid.Column="1" Width="8"/>
+        <Grid Grid.Column="1" HorizontalAlignment="Center" Height="225" Margin="0,75,0,0" VerticalAlignment="Top" Width="116"/>
+        <Grid Grid.Column="1" x:Name="grid2" Margin="6,2,10,2" Background="AliceBlue">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="193*"/>
+                <RowDefinition Height="238*"/>
+            </Grid.RowDefinitions>
+        </Grid>
 
 
     </Grid>

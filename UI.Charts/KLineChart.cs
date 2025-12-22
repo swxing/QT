@@ -6,28 +6,16 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media;
 using d = System.Diagnostics.Debug;
+using QT.Core;
 
 namespace QT.UI.Charts
 {
    public class KLineChart:FrameworkElement
    {
 
-      //private KLineInfoBarChart _info;
-
-      public KLineChart()
-      {
-         
-
-
-
-      }
-
-
-
-
+      /// <summary>存放指標</summary>
       List<Data.Indicators.Indicator> _indicators = new List<Data.Indicators.Indicator>();
-
-
+      ChartViewState _state = null!;
 
 
       public void AddIndicator(Data.Indicators.Indicator indicator)
@@ -35,10 +23,6 @@ namespace QT.UI.Charts
          _indicators.Add(indicator);
       }
 
-
-
-
-      ChartViewState _state = null!;
 
       public ChartViewState State
       {
@@ -48,11 +32,24 @@ namespace QT.UI.Charts
          {
             //進行註冊
             _state = value;
+            _state.SymbolChanged += _state_SymbolChanged;
             _state.RefreshChartsUiRequested += () => this.InvalidateVisual();
 
          }//set
 
       }//state
+
+      private void _state_SymbolChanged(object? sender, string e)
+      {
+         //需要重新計算指標
+         foreach(var indicator in this._indicators)
+         {
+            indicator.Symbol = e;
+            indicator.ReComputing();
+         }
+
+         
+      }
 
       float _minPrice = float.MaxValue;
       float _maxPrice = float.MinValue;
@@ -63,22 +60,6 @@ namespace QT.UI.Charts
 
       protected override void OnRender(DrawingContext dc)
       {
-         
-         //if(this.IsLoaded==false)
-            //return;
-         d.WriteLine($"KLineChart OnRender {_count++} times.");
-
-         //if (this._state == null)
-         //{
-         //   this._state = new ChartViewState()
-         //   {
-         //      Symbol = "3661",
-         //      Interval = BarInterval.Day,
-         //      VisibleStart = new DateTime(2025, 1, 1),
-         //   };
-         //}
-            
-
 
          if (this.State == null || string.IsNullOrEmpty(State.Symbol))
             return;
@@ -92,7 +73,7 @@ namespace QT.UI.Charts
 
          //找出要呈現的bars
          int count = (int)(this.ActualWidth / State.BarWidth);
-         var barSet = DataService.GetBarSet(State.Symbol, State.Interval);
+         var barSet =BarSet.GetBarSet(State.Symbol, State.Interval);
          int index = barSet.IndexOfByDate(State.VisibleStart, FindDirection.Forward);
          //確保index不會超過範圍
          if (index < 0)
@@ -101,9 +82,6 @@ namespace QT.UI.Charts
             count = barSet.Bars.Count - index;
 
          var bars = barSet.GetRange(index, count);
-
-
-         System.Diagnostics.Debug.WriteLine($"bar: {bars[0].TimeStamp.Date}");
 
          //計算出價格區間
          //@ decide min and max value of the itmes
@@ -118,107 +96,15 @@ namespace QT.UI.Charts
             this._maxPrice = maxPrice * 1.05f;                                                                                          //extend the range
          }
 
-         index = 0;
-         //繪製bars
-         foreach (var bar in bars)
-         {
-            #region K線中的影線。
-            double KShadowLineX = State.BarWidth * index + this.State.BarWidth * 1 / 2;         //將線置中
-            double KShadowLineY0 = this.GetY(bar.High);
-            double KShadowLineY1 = this.GetY(bar.Low);
-            Point KShadowLineP1 = new(KShadowLineX, KShadowLineY0);
-            Point KShadowLineP2 = new(KShadowLineX, KShadowLineY1);
-            KShadowLineP1.Offset(State.OffsetX, 0);
-            KShadowLineP2.Offset(State.OffsetX, 0);
 
-            if (bar.Close >= bar.Open)
-               dc.DrawLine(Res.UpPen, KShadowLineP1, KShadowLineP2);
-            else
-               dc.DrawLine(Res.DownPen, KShadowLineP1, KShadowLineP2);
-
-
-            #endregion
-
-
-            #region k線的實體
-            //@ K線的實體框。實體框要比該Bar瘦小一點，左右各小0.1
-
-            double x0 = this.State.BarWidth * index + this.State.BarWidth * 0.2;
-            double x1 = this.State.BarWidth * index + this.State.BarWidth * 0.8;
-            KShadowLineY0 = this.GetY(bar.Open);
-            KShadowLineY1 = this.GetY(bar.Close);
-
-            Point KBodyP1 = new(x0, KShadowLineY0);
-            Point KBodyP2 = new(x1, KShadowLineY1);
-
-            //@ 進行位移
-            KBodyP1.Offset(State.OffsetX, 0);
-            KBodyP2.Offset(State.OffsetX, 0);
-
-            Rect kRect = new(KBodyP1, KBodyP2);
-            if (kRect.Height == 0)           //如果最終為平盤，則此rect的height為零，在UI上沒有呈現，所以加1。
-               kRect.Height = 1;
-
-            if (bar.Close >= bar.Open)
-               dc.DrawRectangle(Res.UpBrush, null, kRect);
-            else
-               dc.DrawRectangle(Res.DownBrush, null, kRect);
-
-            #endregion
-
-
-
-            index++;
-         }
-
-
-
-         foreach (var indicator in this._indicators)
-         {
-            if (indicator.IsVisible == false)
-               continue;
-            foreach (var indicatorVisual in indicator)
-            {
-               var pen = new Pen(indicatorVisual.Foreground, indicatorVisual.Width);
-               // var providerIndex = indicator.IndexOf(indicatorItem);
-               int maIndex = -1;
-               List<Point> maPoints = new List<Point>();
-               foreach (var trading in bars)
-               {
-                  maIndex++;
-                  var price = indicatorVisual.GetValue(trading.TimeStamp);
-                  if (float.IsNaN(price))           //NaN不能用price==float.NaN來判斷。
-                     continue;
-
-                  double x = State.BarWidth * maIndex + this.State.BarWidth * 1 / 2;               //逐一取得X 的位置。
-                  x += State.OffsetX;                                               //加上偏移量。
-                  double y = this.GetY(price);                                       //取得Y的正確位置。
-
-
-                  Point maPoint = new Point(x, y);
-                  maPoints.Add(maPoint);
-               }
-
-               var curvePoints = Tools.MakeCurvePoints(maPoints.ToArray(), 0.1);          //將點轉換成曲線。
-               if (curvePoints == null)
-                  continue;
-
-               PathGeometry geo = Tools.MakeBezierPath(curvePoints);
-               dc.DrawGeometry(null, pen, geo);                   //繪制。
-
-            }
-         }
 
 
 
 
 
          #region @ 繪制價格線
-         //Rect priceRet = new Rect(this.ActualWidth - 50, _infoBarHeight, 50, this.ActualHeight-this._infoBarHeight);
          Rect priceRet = new(this.ActualWidth - 60, 0, 60, this.ActualHeight);
-
-         Pen pricePen = new(Res.DownBrush, 1);
-
+         Pen pricePen = new(Brushes.Black, 1);
          dc.DrawRectangle(Brushes.Black, null, priceRet);
          dc.DrawLine(pricePen, priceRet.TopLeft, priceRet.BottomLeft);
 
@@ -256,6 +142,107 @@ namespace QT.UI.Charts
 
          }
          #endregion
+
+
+         //限制繪制的區域(不能繪制到價格線區)
+         Rect clipRect = new(0, 0, this.ActualWidth - 60, this.ActualHeight);
+         dc.PushClip(new RectangleGeometry(clipRect));
+
+
+
+         index = 0;
+         //繪製bars
+         foreach (var bar in bars)
+         {
+            #region K線中的影線。
+            double KShadowLineX = State.BarWidth * index + this.State.BarWidth * 1 / 2;         //將線置中
+            double KShadowLineY0 = this.GetY(bar.High);
+            double KShadowLineY1 = this.GetY(bar.Low);
+            Point KShadowLineP1 = new(KShadowLineX, KShadowLineY0);
+            Point KShadowLineP2 = new(KShadowLineX, KShadowLineY1);
+            KShadowLineP1.Offset(State.OffsetX, 0);
+            KShadowLineP2.Offset(State.OffsetX, 0);
+
+            if (bar.Close >= bar.Open)
+               dc.DrawLine(Res.UpPen, KShadowLineP1, KShadowLineP2);
+            else
+               dc.DrawLine(QT.Core.Res.DownPen, KShadowLineP1, KShadowLineP2);
+
+
+            #endregion
+
+
+            #region k線的實體
+            //@ K線的實體框。實體框要比該Bar瘦小一點，左右各小0.1
+
+            double x0 = this.State.BarWidth * index + this.State.BarWidth * 0.2;
+            double x1 = this.State.BarWidth * index + this.State.BarWidth * 0.8;
+            KShadowLineY0 = this.GetY(bar.Open);
+            KShadowLineY1 = this.GetY(bar.Close);
+
+            Point KBodyP1 = new(x0, KShadowLineY0);
+            Point KBodyP2 = new(x1, KShadowLineY1);
+
+            //@ 進行位移
+            KBodyP1.Offset(State.OffsetX, 0);
+            KBodyP2.Offset(State.OffsetX, 0);
+
+            Rect kRect = new(KBodyP1, KBodyP2);
+            if (kRect.Height == 0)           //如果最終為平盤，則此rect的height為零，在UI上沒有呈現，所以加1。
+               kRect.Height = 1;
+
+            if (bar.Close >= bar.Open)
+               dc.DrawRectangle(Res.UpBrush, null, kRect);
+            else
+               dc.DrawRectangle(Res.DownBrush, null, kRect);
+
+            #endregion
+
+
+
+            index++;
+         }
+
+
+         #region 繪制指標
+         foreach (var indicator in this._indicators)
+         {
+            if (indicator.IsVisible == false)
+               continue;
+
+            foreach (var indicatorVisual in indicator)
+            {
+               var pen = new Pen(indicatorVisual.Foreground, indicatorVisual.Width);
+               int maIndex = -1;
+               List<Point> maPoints = new List<Point>();
+               foreach (var trading in bars)
+               {
+                  maIndex++;
+                  var price = indicatorVisual.GetValue(trading.TimeStamp);
+                  if (float.IsNaN(price))           //NaN不能用price==float.NaN來判斷。
+                     continue;
+
+                  double x = State.BarWidth * maIndex + this.State.BarWidth * 1 / 2;               //逐一取得X 的位置。
+                  x += State.OffsetX;                                               //加上偏移量。
+                  double y = this.GetY(price);                                       //取得Y的正確位置。
+
+
+                  Point maPoint = new Point(x, y);
+                  maPoints.Add(maPoint);
+               }
+
+               var curvePoints = Tools.MakeCurvePoints(maPoints.ToArray(), 0.1);          //將點轉換成曲線。
+               if (curvePoints == null)
+                  continue;
+
+               PathGeometry geo = Tools.MakeBezierPath(curvePoints);
+               dc.DrawGeometry(null, pen, geo);                   //繪制。
+
+            }
+         }
+         #endregion
+
+
 
 
 

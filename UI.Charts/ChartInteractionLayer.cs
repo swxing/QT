@@ -14,13 +14,14 @@ namespace QT.UI.Charts
 {
 
 
-   /// <summary>一個位於最頂端的透明層，用來處理滑鼠的訊息，含move, drag等，並再將結果設定到State屬性中。
-   ///   
-   /// </summary>
+   /// <summary>一個位於最頂端的透明層，用來處理滑鼠的訊息，含move, drag等，並再將結果設定到State屬性中。</summary>
     public class ChartInteractionLayer:System.Windows.Controls.Control
     {
 
       public required ChartViewState State { get; set; } = ChartViewState.Empty;
+      Point _mouseDown_Point;
+      DateTime _mouseDown_StartDate;
+      double _mouseDown_OffsetX;
 
 
       public ChartInteractionLayer()
@@ -37,7 +38,7 @@ namespace QT.UI.Charts
       public Bar GetStartBarWhenScrollEnd()
       {
          
-         var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+         var bars = BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
          double realBarWidth = this.barWidth * this.ScaleRate;
          int count = (int)(this.ActualWidth / realBarWidth / 2);          //可容納的bar數量
          var startBar = bars.Bars[bars.Bars.Count - count - 1];            //取得畫面為一半時的起始Bar
@@ -53,9 +54,7 @@ namespace QT.UI.Charts
          
          if (date > barFirst.TimeStamp)
             date = barFirst.TimeStamp;
-
-         var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
-
+         var bars = BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
          if (bars.Bars.Count == 0)          //因為沒有資料
             return;
 
@@ -64,7 +63,6 @@ namespace QT.UI.Charts
             date = bars.Bars[0].TimeStamp;
          if (date > bars.Bars[bars.Bars.Count - 1].TimeStamp)
             date = bars.Bars[bars.Bars.Count - 1].TimeStamp;
-
 
          Bar? bar;
 
@@ -77,11 +75,8 @@ namespace QT.UI.Charts
             return;
 
          //修正bar
-
-
          this.State.VisibleStart = bar.TimeStamp;
-         this.State.SelectedDate = this.GetSelectedDate();
-
+         this.State.SelectedDateTime = this.GetSelectedDate();
 
          //@ 針算出新的StartDate
          if (this.State.IsFixedDateLine == true)
@@ -124,9 +119,6 @@ namespace QT.UI.Charts
          return item.TimeStamp;
       }
 
-      Point _mouseDown_Point;
-      DateTime _mouseDown_StartDate;
-      double _mouseDown_OffsetX;
 
 
       private void Dashboard_MouseWheel(object sender, MouseWheelEventArgs e)
@@ -180,7 +172,7 @@ namespace QT.UI.Charts
          this._mouseDown_StartDate = this.State.VisibleStart;
          this._mouseDown_OffsetX = this.State.OffsetX;
          this.State.IsDrag = false;
-         this.State.SelectedDate = this.GetSelectedDate();
+         this.State.SelectedDateTime = this.GetSelectedDate();
       }
 
 
@@ -196,7 +188,7 @@ namespace QT.UI.Charts
          //如果不是拖曳，則只更新選取的日期
          if (this.State.IsDrag == false)
          {
-            this.State.SelectedDate = this.GetSelectedDate();
+            this.State.SelectedDateTime = this.GetSelectedDate();
             return;
          }
 
@@ -223,7 +215,7 @@ namespace QT.UI.Charts
 
                //移動的距離沒問題。
 
-               var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+               var bars =  BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
                int startBarIndex = bars.IndexOfByDate(this._mouseDown_StartDate, FindDirection.Forward);
 
                startBarIndex -= 移動數量;           //最新的startBarIndex
@@ -253,7 +245,7 @@ namespace QT.UI.Charts
                this.State.OffsetX = x移動距離 % this.State.BarWidth;                               //餘數為偏移量
                //this.State.OffsetX = 0;
                this.State.VisibleStart = bars.Bars[startBarIndex].TimeStamp;
-               this.State.SelectedDate = this.GetSelectedDate();
+               this.State.SelectedDateTime = this.GetSelectedDate();
                this.State.RequestRefreshChartsUI();
 
             }
@@ -266,7 +258,7 @@ namespace QT.UI.Charts
                var realBarWidth = this.barWidth * this.ScaleRate;
                int offsetCount = (int)(offsetX / realBarWidth);               //移動的bar數量
                offsetCount = -offsetCount;                                                   //因為是反向的
-               var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+               var bars = BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
                var bar = bars.FindBar(this._mouseDown_StartDate, FindDirection.Forward, offsetCount);     //找出實際的日期了。
                if (bar == null)
                   return;
@@ -283,7 +275,7 @@ namespace QT.UI.Charts
 
                if (this.State.VisibleStart > trading.TimeStamp)             //當起始日大於限制時
                   this.State.VisibleStart = trading.TimeStamp;          //設定新的StartDate
-               this.State.SelectedDate = this.GetSelectedDate();
+               this.State.SelectedDateTime = this.GetSelectedDate();
 
                this.State.RequestRefreshChartsUI();
             }
@@ -306,7 +298,7 @@ namespace QT.UI.Charts
          if (this.State.Symbol == null)
             return null;
 
-         var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+         var bars = BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
 
          x = x - this.State.OffsetX;                                            //把偏移去除掉。
          double indexD = x / (barWidth * this.ScaleRate);          //縮放後，bar的寬度
@@ -341,7 +333,7 @@ namespace QT.UI.Charts
             var barWidth = this.barWidth * value;
             int count = (int)(point.X / barWidth);                         //current width can hold how many bar
 
-            var bars = DataService.GetBarSet(this.State.Symbol, this.State.Interval);
+            var bars = BarSet.GetBarSet(this.State.Symbol, this.State.Interval);
             var index = bars.Bars.ToList().IndexOf(currentItem!);               //!表示不可能為null，就開發人員自己負責。
 
             index = index - count + 1;
@@ -355,30 +347,16 @@ namespace QT.UI.Charts
          }//set
       }
 
+      
       protected override void OnRender(DrawingContext dc)
       {
+
          base.OnRender(dc);
 
-         // 畫滿整個控制項為黑色
-         dc.DrawRectangle(
-             Brushes.Transparent,
-             null,
-             new Rect(0, 0, ActualWidth, ActualHeight)
-         );
+         // 畫滿整個控制項為黑色，否則會無法接收滑鼠事件。
+         dc.DrawRectangle(Brushes.Transparent, null, new Rect(0, 0, ActualWidth, ActualHeight));
       }
 
-      //protected override void OnRender(DrawingContext drawingContext)
-      //{
-      //   base.OnRender(drawingContext);
 
-      //   //@ 背景
-      //   var rect = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
-      //   drawingContext.DrawRectangle(Res.DashboardBkBrush, null, rect);
-      //}
-
-
-
-
-
-   }
-}
+   }//cls
+}//ns

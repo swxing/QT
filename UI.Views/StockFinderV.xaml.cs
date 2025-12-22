@@ -21,6 +21,30 @@ namespace QT.UI.Views
       public StockFinderV()
       {
          InitializeComponent();
+         this.livStocks.SelectionChanged += Stocks_SelectionChanged;  
       }
+
+      private void Stocks_SelectionChanged(object sender, SelectionChangedEventArgs e)
+      {
+         //當選取的個股發生改變時。
+         var vm = this.DataContext as ViewModels.StockFinderVM
+            ?? throw new InvalidOperationException("DataContext必須是StockFinderVM");
+
+         vm.SelectedStockVM = this.livStocks.SelectedItem as QT.UI.ViewModels.StockVM;
+
+      }
+
+
+      /// <summary>容易取得資料模式</summary>
+      private QT.UI.ViewModels.StockFinderVM VM
+      {
+         get
+         {
+            return this.DataContext as QT.UI.ViewModels.StockFinderVM
+               ?? throw new InvalidOperationException("DataContext必須是StockFinderVM");
+         }
+      }
+
+
    }
 }
